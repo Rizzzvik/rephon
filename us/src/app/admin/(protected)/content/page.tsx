@@ -1,0 +1,1 @@
+import{AdminAboutContent}from"@/components/admin-about-content";import{requireStaff}from"@/lib/auth/staff";import{redirect}from"next/navigation";export const dynamic="force-dynamic";export default async function AdminContentPage(){try{await requireStaff(["admin","super_admin"])}catch{redirect("/admin")}return <main className="admin-page"><AdminAboutContent/></main>}

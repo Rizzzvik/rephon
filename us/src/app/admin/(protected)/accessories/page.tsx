@@ -1,0 +1,1 @@
+import{AdminAccessories}from"@/components/admin-accessories";export const dynamic="force-dynamic";export default function AdminAccessoriesPage(){return <main className="admin-page"><AdminAccessories/></main>}

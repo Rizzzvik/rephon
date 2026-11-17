@@ -1,0 +1,1 @@
+import{AdminUsers}from"@/components/admin-users";import{requireStaff}from"@/lib/auth/staff";import{redirect}from"next/navigation";export const dynamic="force-dynamic";export default async function AdminUsersPage(){try{await requireStaff(["super_admin"])}catch{redirect("/admin")}return <main className="admin-page"><AdminUsers/></main>}

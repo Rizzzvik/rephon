@@ -1,0 +1,1 @@
+import{AdminWhatsAppInbox}from"@/components/admin-whatsapp-inbox";export const dynamic="force-dynamic";export default function AdminWhatsAppPage(){return <main className="admin-page"><AdminWhatsAppInbox/></main>}

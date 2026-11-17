@@ -1,0 +1,1 @@
+import {AdminCatalogueManager} from"@/components/admin-catalogue-manager";export const dynamic="force-dynamic";export default function AdminCataloguePage(){return <main className="admin-page"><AdminCatalogueManager/></main>}
