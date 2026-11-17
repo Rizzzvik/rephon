@@ -1,0 +1,39 @@
+ORIGINAL PHONE COMMERCE DATASET PACKAGE
+
+This package contains clean, original templates only. It does not contain scraped Cashify or third-party records.
+
+FILES
+1. DEVICE_MASTER.xlsx
+   - START_HERE
+   - BRAND_REGISTRY (starter brand code registry)
+   - PHONE_MODELS (empty)
+   - DEVICE_VARIANTS (empty; formula prefilled for 2,000 rows)
+2. REPAIR_MASTER.xlsx
+   - REPAIR_ISSUES (empty)
+   - REPAIR_PRICES (empty)
+3. BUYBACK_MASTER.xlsx
+   - CONDITION_GRADES (starter grading labels; criteria to be defined)
+   - BUYBACK_RULES (empty)
+4. RESALE_MASTER.xlsx
+   - RESALE_INVENTORY (empty)
+   - CONDITION_GRADES (starter grading labels)
+5. ACCESSORIES_MASTER.xlsx
+   - ACCESSORIES (empty)
+6. SERVICE_PROVIDER_MASTER.xlsx
+   - PROVIDERS (empty)
+7. DATA_DICTIONARY.xlsx
+   - field definitions, code rules and implementation order
+
+DEVICE CODE
+7 digits = BBMMM VV, stored without separators.
+Example: Apple 14 + model 013 + variant 01 = 1401301.
+Status is a separate column: 0 inactive, 1 active.
+Variant 00 reserved for unknown/unallocated variant.
+
+NO SCRAPED DATA
+No Cashify records, external price observations, phone model lists, customer records, repair quotes or resale stock were imported.
+Brand codes are proposed internal starter allocations and should be confirmed by the business before production adoption.
+
+USAGE
+Treat Excel as a controlled import/edit format. The live website and WhatsApp bot should use PostgreSQL as the source of truth. Import in this order:
+DEVICE_MASTER -> REPAIR_MASTER -> BUYBACK_MASTER -> RESALE_MASTER -> ACCESSORIES_MASTER -> SERVICE_PROVIDER_MASTER.
