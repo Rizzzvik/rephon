@@ -1,0 +1,3 @@
+-- Intentionally no catalogue, price, stock, image, review, provider, or customer
+-- fixtures are seeded. Import the supplied business workbooks after validation.
+-- This prevents sample devices from being mistaken for verified stock.
