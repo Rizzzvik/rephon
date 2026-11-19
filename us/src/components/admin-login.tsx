@@ -1,10 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 
 export function AdminLogin() {
   const [email,setEmail]=useState(""); const [password,setPassword]=useState(""); const [error,setError]=useState(""); const [busy,setBusy]=useState(false);
+  useEffect(()=>{
+    const access=new URLSearchParams(window.location.search).get("access");
+    const messages:Record<string,string>={
+      role:"This account signed in, but it has no staff role. Assign the account an admin role in public.staff_roles.",
+      session:"Supabase did not keep the sign-in session. Check the deployed Supabase URL and authentication settings, then try again.",
+      verify:"The account signed in, but its staff access could not be checked. Confirm the Cloudflare Supabase URL, anon key, and service-role secret all belong to the same project.",
+      configuration:"Staff authentication is not configured for this deployment. Check the Cloudflare Supabase environment variables.",
+    };
+    if(access&&messages[access])setError(messages[access]);
+  },[]);
   const submit=async(event:React.FormEvent<HTMLFormElement>)=>{
     event.preventDefault();setBusy(true);setError("");
     try {
