@@ -6,6 +6,22 @@ type Batch = { id: string; workbook: string; file_name: string; status: string; 
 type Preview = Batch & { sheets: Array<{name:string;headers:string[];recognized:string[];unknown:string[];missing:string[];rowCount:number}>; issues: Array<{sheet:string;row:number;severity:string;field?:string;message:string}> };
 const workbooks = ["DEVICE_MASTER.xlsx","REPAIR_MASTER.xlsx","BUYBACK_MASTER.xlsx","RESALE_MASTER.xlsx","ACCESSORIES_MASTER.xlsx","SERVICE_PROVIDER_MASTER.xlsx","PRICING_POLICY_MASTER.xlsx","REPHON_24X7_COMPLETE_MODEL_CATALOGUE_2019_2026.xlsx"];
 
+async function readApiJson<T>(response: Response): Promise<T> {
+  const contentType = response.headers.get("content-type") ?? "";
+  const body = await response.text();
+  try {
+    return JSON.parse(body) as T;
+  } catch {
+    if (response.redirected) {
+      throw new Error("Your staff session may have expired. Sign in again, then retry the workbook preview.");
+    }
+    if (contentType.includes("text/html") || /^\s*<!doctype html|^\s*<html/i.test(body)) {
+      throw new Error(`The import API returned a webpage instead of JSON (HTTP ${response.status}). The deployed Worker may be missing this API route or may have failed while processing the workbook. Check the Cloudflare Worker logs and confirm the latest GitHub commit is deployed.`);
+    }
+    throw new Error(`The import API returned an unreadable response (HTTP ${response.status}). Retry once; if it persists, check the Cloudflare Worker logs.`);
+  }
+}
+
 export function AdminImportConsole() {
   const [history, setHistory] = useState<Batch[]>([]);
   const [workbook, setWorkbook] = useState(workbooks[0]);
@@ -16,7 +32,9 @@ export function AdminImportConsole() {
 
   const loadHistory = async () => {
     const response = await fetch("/api/v1/admin/imports", { cache: "no-store" });
-    if (response.ok) { const body = await response.json() as {data:Batch[]}; setHistory(body.data); }
+    const body = await readApiJson<{data?:Batch[];error?:string}>(response);
+    if (!response.ok) throw new Error(body.error || `Could not load import history (HTTP ${response.status}).`);
+    setHistory(body.data ?? []);
   };
   useEffect(() => { void loadHistory(); }, []);
 
@@ -26,7 +44,7 @@ export function AdminImportConsole() {
     try {
       const form = new FormData(); form.set("workbook", workbook); form.set("file", file);
       const response = await fetch("/api/v1/admin/imports", { method: "POST", body: form });
-      const body = await response.json() as {data?:Preview;error?:string};
+      const body = await readApiJson<{data?:Preview;error?:string}>(response);
       if (!response.ok || !body.data) throw new Error(body.error || "The workbook could not be previewed.");
       setPreview(body.data); await loadHistory();
     } catch (error) { setMessage(error instanceof Error ? error.message : "Import preview failed."); }
@@ -37,7 +55,7 @@ export function AdminImportConsole() {
     setBusy(true); setMessage("");
     try {
       const response = await fetch(`/api/v1/admin/imports/${preview.id}`, { method: "POST", headers: { "content-type":"application/json" }, body: JSON.stringify({ action:"commit" }) });
-      const body = await response.json() as {data?:{importedRows:number};error?:string};
+      const body = await readApiJson<{data?:{importedRows:number};error?:string}>(response);
       if (!response.ok) throw new Error(body.error || "Import could not be committed.");
       setMessage(`Import complete. ${body.data?.importedRows ?? 0} rows written.`); setPreview(null); setFile(null); await loadHistory();
     } catch (error) { setMessage(error instanceof Error ? error.message : "Import commit failed."); }
