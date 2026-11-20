@@ -477,6 +477,7 @@ body { background:#ffffff; color:#000000; }
 .brand,.brand-mark { color:#000000; }
 .brand-mark { border:1px solid #000000; background:#ffffff; }
 .main-nav { border-color:#e5e5e5; background:#ffffff; box-shadow:none; }
+.main-nav { gap:clamp(20px,2.2vw,32px); padding:16px clamp(30px,3.2vw,48px); }
 .main-nav a,.nav-dropdown-trigger { color:#111111; }
 .main-nav a:hover,.main-nav a:focus-visible { color:#000000; text-decoration:underline; text-underline-offset:5px; }
 .nav-quick-link { border-color:#000000; background:#ffffff; color:#000000; box-shadow:none; }
